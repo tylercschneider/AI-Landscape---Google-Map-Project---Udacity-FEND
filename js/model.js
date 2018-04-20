@@ -1,5 +1,5 @@
 /**************************
-Model
+******** Model
 **************************/  
 var model = [
 	{
@@ -21,7 +21,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 
 	},
 	{
@@ -43,7 +43,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 
 	},
 	{
@@ -65,7 +65,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 
 	},
 	{
@@ -87,7 +87,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 
 	},
 	{
@@ -109,7 +109,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	},
 	{
 		"name": "Carnegie Mellon University (CMU)",
@@ -130,7 +130,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	},
 	{
 		"name": "Facebook",
@@ -151,7 +151,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	},
 	{
 		"name": "Alibaba",
@@ -172,7 +172,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	},
 	{
 		"name": "Udacity",
@@ -193,7 +193,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	},
 	{
 		"name": "Apple",
@@ -214,7 +214,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	},
 	{
 		"name": "IBM",
@@ -235,7 +235,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	},
 	{
 		"name": "Microsoft",
@@ -256,7 +256,7 @@ var model = [
 
 		"content": "needs to be updated",
 
-		"news": "some sort of an api call input"
+		"news": []
 	}
 ];
 var mapStyle = [
@@ -549,154 +549,3 @@ var mapStyle = [
 		    ]
 		  }
 		];
-/*******************************
-ViewModel
-********************************/
-
-//Function to convert model values into Knockout compatible versions
-function listItem(id, name) {
-	var self = this;
-	self.id = id;
-	self.name = name;
-	self.visibleProp = ko.observable(true);
-}
-function listBuild(model) {
-	var listItems = ko.observableArray();
-	for (i=0; i < model.length; i++) {
-		listItems.push(new listItem(i, model[i].name));
-	}
-	return listItems;
-}
-function displayList(listItems, selectedTag) {
-	var displayItems = listItems;
-	for (i=0; i < displayItems.length; i++) {
-		console.log(i);
-		for(j=0; j < selectedTag.idList.length; i++){
-			console.log(j);
-			if (selectedTag.idList[j] == displayItems[i].id){
-				displayItems[i].visibleProp(true);
-				console.log(displayItems[i].visibleProp());
-			}
-			else {
-				displayItems[i].visibleProp(false);
-			}
-		}
-	}
-	return displayItems;
-}
-function myViewModel() {
-	var self = this;
-	self.listItems = listBuild(model);
-	self.selectedTag = ko.observable("all");
-	self.tagList = [{tag:"all", idList: [0,1,2,3,4,5,6,7,8,9,10,11]}, 
-			{tag:"profit", idList: [0,1,3,4,6,7,8,9,10,11]}, 
-			{tag: "research", idList: [0,1,2,4,5,6,7,9,10,11]}, 
-			{tag:"hardware", idList: [0,1,3,6,9,10,11]}];
-	self.clickOrg = function(listItem) {
-			console.log(listItem.id);
-			//markerSet(listItem);
-		}
-
-	self.displayItems = displayList(self.listItems, self.selectedTag);
-}
-/**************************************
-Click menu icon to open and close side menu
-**************************************/
-$('.menu-icon').click(function() {
-	$('.nav').toggleClass('open');
-});
-
-/**************************************
-***************************************
-GOOGLE MAP
-***************************************/
-//Variables used to manage marker icons
-var prim = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-//star icon and programming not implemented in this iteration, was used for comprehensive click testing
-var star = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-var select = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
-var markers = [];
-var premarkerid = -1;
-var premarker, latlong;
-var markerClicks;
-//The next 298 lines of code creates a map, and sets the intial settings and styles. 
-function initMap() {
-    var uluru = {lat: 0, lng: -122};
-    var map = new google.maps.Map(document.getElementById('map'), {
-    	zoom: 2.5,
-      	center: uluru,
-      	mapTypeControl: false,
-      	streetViewControl: false,
-      	fullscreenControl: false,
-      	styles: mapStyle
-    });
-	var infowindow = new google.maps.InfoWindow({
-		content: '<div id="content">'+'<div id="siteNotice">'+'</div>'+
-		            '<h1 id="firstHeading" class="firstHeading">Company</h1>'+
-		            '<div id="bodyContent">'+
-		            '<p>article title, link</p>'+
-		            '<p>article title, link</p>'+
-		            '<p>article title, link</p>'+
-		            '<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
-		            '</div>'+
-		            '</div>'
-	});
-   //Populates map with Markers by looping through the model data found in app.js
-    
-    for(i = 0; i < model.length; i++){
-    	latlong = {lat: (model[i].latlong[0]), lng: (model[i].latlong[1])};
-    	var marker = (new google.maps.Marker({
-			id: i,
-			position: latlong,
-			map: map,
-			title: model[i].name,
-			star: model[i].priority,
-			icon: prim,
-			content: model[i].content,
-			news: model[i].news
-    	}));
-    	markers.push(marker);
-    	if(premarker === undefined || premarker == null || premarker.length <= 0) {
-    		premarker = markers[i];
-    	}
-    	//handles marker clicks in various orders - sets icons, opens info windows, selects list items
-      	google.maps.event.addListener(marker, 'click', (function(marker) {
-			return function() {
-				//different marker is clicked
-				if (marker.id != premarkerid){
-					markers[marker.id].setIcon(select);
-					infowindow.open(map, markers[marker.id]);
-					//reset previously clicked marker to proper icon
-					if (premarker.star) {
-						premarker.setIcon(star);	
-					}
-					else{
-						premarker.setIcon(prim);
-					}
-				}
-				//repetitive clicks on same marker
-				else {
-					//marker receives third consecutive click
-					if(markers[marker.id].icon != select) {
-						markers[marker.id].setIcon(select);
-						infowindow.open(map, markers[marker.id]);
-					}
-					//marker receives second consecutive click
-					else {
-						//reset marker to proper icon
-						if (markers[marker.id].star) {
-							markers[marker.id].setIcon(star);
-						}
-						else{
-							markers[marker.id].setIcon(prim);
-						}
-					infowindow.close();
-					}	
-				}
-				//sets marker to be previously clicked marker for next click event
-				premarkerid = marker.id;
-				premarker = markers[marker.id];
-			}
-		})(marker));				
-	};		
-}
