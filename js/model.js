@@ -116,7 +116,7 @@ var model = [
 
 		"latlong": [40.440624, -79.995888],
 
-		"priority": 1,
+		"priority": 0,
 
 		"tags": ["all", "profit", "research"],
 

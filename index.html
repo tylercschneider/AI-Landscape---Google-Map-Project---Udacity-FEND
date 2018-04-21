@@ -29,7 +29,7 @@
 	      						<select id="filter" data-bind="options: tagList, optionsText: 'tag', value: selectedTag"></select>
 	      					</li>
 	      				</ul>
-	      				<ul class="nav__list" data-bind="foreach: displayItems" style="list-style: none">
+	      				<ul class="nav__list" data-bind="foreach: listItems" style="list-style: none">
 					       	<li class="nav-item org" data-bind="text: name, visible: visibleProp, click: $root.clickOrg"></li>
 				    	</ul>
 				 	</nav>
