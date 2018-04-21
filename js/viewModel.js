@@ -47,7 +47,7 @@ var viewModel = function(model) {
 		console.log(idListList);
 		console.log("running");
 		for(i=0; i < self.listItems().length; i++) {
-			
+			markers[i].infowindow.close();
 			if(idListList[i]===1){
 				self.listItems()[i].visibleProp(true);
 				markers[i].setMap(map);
@@ -103,17 +103,27 @@ function initMap() {
 	var myViewModel = new viewModel(model);
 	ko.applyBindings(myViewModel);
 }
+function newsGather(company) {
+	var url = 'https://newsapi.org/v2/everything?q='+company+'&apiKey=50795c5a608f4077a74a353d37f7157f';
+	$.ajax({
+		url: url,
+	})
+}
+function contentBuilder(model, i) {
+	var newsInfo = newsGather(model[i].name);
+	var partOne = '<div id="content">'+'<div id="siteNotice">'+'</div>'+
+	'<h1 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h1>'+
+	'<div id="bodyContent">';
+	var partTwo = "";
+	for(j=0; j<3; j++){
 
-function contentBuilder() {
-	var contentString = '<div id="content">'+'<div id="siteNotice">'+'</div>'+
-	'<h1 id="firstHeading" class="firstHeading">Company</h1>'+
-	'<div id="bodyContent">'+
-	'<p>article title, source, link</p>'+
-	'<p>article title, source, link</p>'+
-	'<p>article title, source, link</p>'+
-	'<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
+		partTwo += '<p>article title, source, link</p>';
+	}
+
+	var partThree = '<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
 	'</div>'+
-	'</div>'
+	'</div>';
+	var contentString = partOne + partTwo + partThree;
 	return contentString;
 }
 
@@ -134,12 +144,10 @@ function createMarker() {
 			map: map,
 			title: model[i].name,
 			star: model[i].priority,
-			icon: prim,
-			content: model[i].content,
-			news: model[i].news
+			icon: prim
     	}));
     marker.infowindow = new google.maps.InfoWindow({
-  		content: model[i].name
+  		content: contentBuilder(model, i);
 		});
 	google.maps.event.addListener( marker, 'click', function() {
 		var id = marker.id;
