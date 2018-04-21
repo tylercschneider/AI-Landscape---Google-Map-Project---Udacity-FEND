@@ -19,9 +19,7 @@ var model = [
 
 		"website": "https://www.google.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Google"
 
 	},
 	{
@@ -41,9 +39,7 @@ var model = [
 
 		"website": "https://www.amazon.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Amazon"
 
 	},
 	{
@@ -63,9 +59,7 @@ var model = [
 
 		"website": "https://openai.com/",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Open-AI"
 
 	},
 	{
@@ -85,9 +79,7 @@ var model = [
 
 		"website": "https://www.nvidia.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "nvidia"
 
 	},
 	{
@@ -107,9 +99,7 @@ var model = [
 
 		"website": "https://web.mit.edu",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "mit"
 	},
 	{
 		"name": "Carnegie Mellon University (CMU)",
@@ -128,9 +118,7 @@ var model = [
 
 		"website": "https://www.cmu.edu",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "carnegie-mellon-university"
 	},
 	{
 		"name": "Facebook",
@@ -149,9 +137,7 @@ var model = [
 
 		"website": "https://www.facebook.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Facebook"
 	},
 	{
 		"name": "Alibaba",
@@ -170,9 +156,7 @@ var model = [
 
 		"website": "https://www.alibaba.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Alibaba"
 	},
 	{
 		"name": "Udacity",
@@ -191,9 +175,7 @@ var model = [
 
 		"website": "https://www.udacity.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Udacity"
 	},
 	{
 		"name": "Apple",
@@ -212,9 +194,7 @@ var model = [
 
 		"website": "https://www.apple.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Apple"
 	},
 	{
 		"name": "IBM",
@@ -233,9 +213,7 @@ var model = [
 
 		"website": "https://www.ibm.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "IBM"
 	},
 	{
 		"name": "Microsoft",
@@ -254,9 +232,7 @@ var model = [
 
 		"website": "https://www.microsoft.com",
 
-		"content": "needs to be updated",
-
-		"news": []
+		"news": "Microsoft"
 	}
 ];
 var mapStyle = [

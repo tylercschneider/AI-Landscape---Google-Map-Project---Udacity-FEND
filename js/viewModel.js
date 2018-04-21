@@ -48,6 +48,7 @@ var viewModel = function(model) {
 		console.log("running");
 		for(i=0; i < self.listItems().length; i++) {
 			markers[i].infowindow.close();
+			markers[i].setIcon(prim);
 			if(idListList[i]===1){
 				self.listItems()[i].visibleProp(true);
 				markers[i].setMap(map);
@@ -88,36 +89,53 @@ var select = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 //star icon and programming not implemented in this iteration, was used for comprehensive click testing
 var star = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
 
-//Creates map, and sets the intial settings and styles. 	
-function initMap() {
-    var uluru = {lat: 0, lng: -122};
-    map = new google.maps.Map(document.getElementById('map'), {
-    	zoom: 2.5,
-      	center: uluru,
-      	mapTypeControl: false,
-      	streetViewControl: false,
-      	fullscreenControl: false,
-      	styles: mapStyle
-    });
-	loadMarkers();
-	var myViewModel = new viewModel(model);
-	ko.applyBindings(myViewModel);
+function apiSorter(store) {
+	console.log(store["status"]);
+	if(store["status"] === 200){
+		var passAlong = []
+		var artLink, artTitle, artSource;
+		for(t=0; t<3; t++){
+			artLink = store["responseJSON"]["articles"][t]["url"];
+			artTitle = store["responseJSON"]["articles"][t]["title"];
+			artSource = store["responseJSON"]["articles"][t]["source"]["name"];
+			passAlong[t][0] = artLink;
+			passAlong[t][1] = artTitle;
+			passAlong[t][2] = artSource;
+		}
+		console.log("sorting");
+		return passAlong;
+	}
+	else{
+		console.log("bad sort");
+		return 0;
+	}
 }
 function newsGather(company) {
-	var url = 'https://newsapi.org/v2/everything?q='+company+'&apiKey=50795c5a608f4077a74a353d37f7157f';
-	$.ajax({
-		url: url,
+	console.log("gathering");
+	console.log(company);
+	var url = 'https://newsapi.org/v2/everything?q='+company+'+and+ai&apiKey=50795c5a608f4077a74a353d37f7157f';
+	var store = $.ajax({
+		url: url
 	})
+	var passAlong = apiSorter(store);
+	return passAlong;
 }
 function contentBuilder(model, i) {
-	var newsInfo = newsGather(model[i].name);
+	var newsInfo = newsGather(model[i].news);
 	var partOne = '<div id="content">'+'<div id="siteNotice">'+'</div>'+
-	'<h1 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h1>'+
+	'<h4 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h4>'+
 	'<div id="bodyContent">';
 	var partTwo = "";
-	for(j=0; j<3; j++){
-
-		partTwo += '<p>article title, source, link</p>';
+	if(newsInfo === 0) {
+		partTwo = '<p>They\'re doing cool stuff...trust me.</p>' +
+					'<p>Google it!</p>';
+		console.log("dummy strings");
+	}
+	else {
+		for(j=0; j<3; j++){
+			partTwo += '<p><a href="' + newsInfo[j][0] + '">'+newsInfo[j][1]+'</a> -->'+ newsInfo[j][2] + '</p>';
+		}
+		console.log("should work");
 	}
 
 	var partThree = '<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
@@ -126,36 +144,6 @@ function contentBuilder(model, i) {
 	var contentString = partOne + partTwo + partThree;
 	return contentString;
 }
-
-function loadMarkers() {
-	//Populates map with Markers by looping through the model data found in app.js
-	for(i = 0; i < model.length; i++){
-    	latlong = {lat: (model[i].latlong[0]), lng: (model[i].latlong[1])};
-    	var markerInfo = createMarker();
-    	markers.push(markerInfo);
-    	//handles marker clicks in various orders - sets icons, opens info windows, selects list items				
-	};
-}
-
-function createMarker() {
-	var marker = (new google.maps.Marker({
-			id: i,
-			position: latlong,
-			map: map,
-			title: model[i].name,
-			star: model[i].priority,
-			icon: prim
-    	}));
-    marker.infowindow = new google.maps.InfoWindow({
-  		content: contentBuilder(model, i);
-		});
-	google.maps.event.addListener( marker, 'click', function() {
-		var id = marker.id;
-		selectMarker(id);
-        });
-	return marker;
-}
-
 function selectMarker(id) {
 	
 	if(premarkerid === -1){
@@ -196,4 +184,47 @@ function selectMarker(id) {
 	}		
 //sets clicked marker to be premarker in next click event
 	premarkerid = id;
+}
+function loadMarkers() {
+	//Populates map with Markers by looping through the model data found in app.js
+	for(i = 0; i < model.length; i++){
+    	latlong = {lat: (model[i].latlong[0]), lng: (model[i].latlong[1])};
+    	var markerInfo = createMarker();
+    	markers.push(markerInfo);
+    	//handles marker clicks in various orders - sets icons, opens info windows, selects list items				
+	};
+}
+
+function createMarker() {
+	var marker = (new google.maps.Marker({
+			id: i,
+			position: latlong,
+			map: map,
+			title: model[i].name,
+			star: model[i].priority,
+			icon: prim
+    	}));
+    marker.infowindow = new google.maps.InfoWindow({
+  		content: contentBuilder(model, i)
+		});
+	google.maps.event.addListener( marker, 'click', function() {
+		var id = marker.id;
+		selectMarker(id);
+        });
+	return marker;
+}
+//Creates map, and sets the intial settings and styles. 	
+function initMap() {
+    var uluru = {lat: 0, lng: -122};
+    map = new google.maps.Map(document.getElementById('map'), {
+    	zoom: 2.5,
+      	center: uluru,
+      	mapTypeControl: false,
+      	streetViewControl: false,
+      	fullscreenControl: false,
+      	styles: mapStyle
+    });
+	loadMarkers();
+	var myViewModel = new viewModel(model);
+	ko.applyBindings(myViewModel);
 }
