@@ -42,22 +42,17 @@ var viewModel = function(model) {
 		selectMarker(id);
 		}
 	self.filter = ko.computed(function() {
-		console.log(self.selectedTag());
 		var idListList = self.idList[self.selectedTag().tag];
-		console.log(idListList);
-		console.log("running");
 		for(i=0; i < self.listItems().length; i++) {
 			markers[i].infowindow.close();
 			markers[i].setIcon(prim);
 			if(idListList[i]===1){
 				self.listItems()[i].visibleProp(true);
 				markers[i].setMap(map);
-				console.log("one");
 			}
 			else {
 				self.listItems()[i].visibleProp(false);
 				markers[i].setMap(null);
-				console.log("two");
 			}
 		}
 		})
@@ -111,12 +106,10 @@ function apiSorter(store) {
 	}
 }
 function newsGather(company) {
-	console.log("gathering");
-	console.log(company);
 	var url = 'https://newsapi.org/v2/everything?q='+company+'+and+ai&apiKey=50795c5a608f4077a74a353d37f7157f';
-	var store = $.ajax({
-		url: url
-	})
+	var store = $.ajax({url: url});
+	console.log(store);
+	console.log(store["status"]);
 	var passAlong = apiSorter(store);
 	return passAlong;
 }
@@ -129,7 +122,6 @@ function contentBuilder(model, i) {
 	if(newsInfo === 0) {
 		partTwo = '<p>They\'re doing cool stuff...trust me.</p>' +
 					'<p>Google it!</p>';
-		console.log("dummy strings");
 	}
 	else {
 		for(j=0; j<3; j++){
@@ -189,13 +181,13 @@ function loadMarkers() {
 	//Populates map with Markers by looping through the model data found in app.js
 	for(i = 0; i < model.length; i++){
     	latlong = {lat: (model[i].latlong[0]), lng: (model[i].latlong[1])};
-    	var markerInfo = createMarker();
+    	var markerInfo = createMarker(i);
     	markers.push(markerInfo);
     	//handles marker clicks in various orders - sets icons, opens info windows, selects list items				
 	};
 }
 
-function createMarker() {
+function createMarker(i) {
 	var marker = (new google.maps.Marker({
 			id: i,
 			position: latlong,
