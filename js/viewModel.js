@@ -2,14 +2,14 @@
 ******** ViewModel
 ********************************/
 var itemChosen;
-//Function to convert model values into Knockout compatible versions
+//Converts model components into List items
 function listItem(id, name) {
 	var self = this;
 	self.id = id;
 	self.name = name;
 	self.visibleProp = ko.observable(true);
 }
-
+//Compiles List items
 function listBuild(model) {
 	var listItems = ko.observableArray();
 	for (i=0; i < model.length; i++) {
@@ -20,28 +20,31 @@ function listBuild(model) {
 
 var viewModel = function(model) {
 	var self = this;
-
+	//Items in list displayed
 	self.listItems = listBuild(model);
 
 	self.selectedTag = ko.observable({tag:"all"});
+	//Tags for filter
 	self.tagList = [
 		{tag:"all"}, 
 		{tag:"profit"}, 
 		{tag: "research"}, 
 		{tag:"hardware"}
 		]
+	//List for filtering
 	self.idList = {
 		"all": [1,1,1,1,1,1,1,1,1,1,1,1], 
 		"profit": [1,1,0,1,1,0,1,1,1,1,1,1], 
 		"research": [1,1,1,0,1,1,1,1,0,1,1,1], 
 		"hardware": [1,1,0,1,0,0,1,0,0,1,1,1]
 		}
-
+	//Selects marker when list item is chosen
 	self.clickOrg = function(listItem) {
 		var id = listItem.id;
 		selectMarker(id);
 		$('.nav').toggleClass('open');
 		}
+	//Recomputes when filter option is utilized dynamically adds and removes icons and list items 
 	self.filter = ko.computed(function() {
 		var idListList = self.idList[self.selectedTag().tag];
 		for(i=0; i < self.listItems().length; i++) {
@@ -86,14 +89,15 @@ var select = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 //star icon and programming not implemented in this iteration, was used for comprehensive click testing
 var star = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
 
-function apiSorter(store) {
-	console.log(store["status"]);
-	if(store["status"] === 200){
+//Sorts data from News API so it can be displayed
+function apiSorter(data) {
+	console.log(data["status"]);
+	if(data["status"] === "ok"){
 		var passAlong = []
 		var artLink, artTitle, artSource;
 		for(t=0; t<3; t++){
-			artLink = store["responseJSON"]["articles"][t]["url"];
-			artTitle = store["responseJSON"]["articles"][t]["title"];
+			artLink = data["articles"][t]["url"];
+			artTitle = data["articles"][t]["title"];
 			passAlong.push(artLink);
 			passAlong.push(artTitle);
 		}
@@ -103,33 +107,40 @@ function apiSorter(store) {
 		return 0;
 	}
 }
-function contentUpdate(model) {
-	for(i=0; i<model.length; i++) {
-		console.log("here");
-		markers[i].infowindow.content = contentBuilder(model, i, false);
-	}
-}
-function newsGather(company, request) {
+//Async request to News API
+function newsGather(company, i) {
 	var url = 'https://newsapi.org/v2/everything?q='+company+'+and+ai&apiKey=50795c5a608f4077a74a353d37f7157f';
-	var store = $.ajax({url: url, async:request});
-	console.log(store["status"]);
-	var passAlong = apiSorter(store);
-	return passAlong;
+	var store;
+	$.getJSON(url).done(function(data) {
+		console.log(data);
+		store = apiSorter(data);
+		markers[i].infowindow.setContent(contentUpdate(store, model, i));
+	});
 }
-function contentBuilder(model, i, request) {
-	var newsInfo = newsGather(model[i].news, request);
+//Creates default string for infowindows in case async request to News API fails
+function contentBuilder(model, i) {
+	newsGather(model[i].news, i);
+	var partOne = '<div id="content">'+'<div id="siteNotice">'+'</div>'+
+	'<h2 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h2>'+
+	'<div id="bodyContent"><h4>Articles</h4>';
+
+	var partTwo = '<p>They\'re doing cool stuff!</p><p>Trust me.</p>' +
+					'<p>Or Google it!</p>';
+
+	var partThree = '<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
+	'</div>'+
+	'</div>';
+	var contentString = partOne + partTwo + partThree;
+	return contentString;
+}
+//Asynchronous update of contentstrings related to infowindows that will be updated by News API
+function contentUpdate(store, model, i) {
 	var partOne = '<div id="content">'+'<div id="siteNotice">'+'</div>'+
 	'<h2 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h2>'+
 	'<div id="bodyContent"><h4>Articles</h4>';
 	var partTwo = "";
-	if(newsInfo === 0) {
-		partTwo = '<p>They\'re doing cool stuff!</p><p>Trust me.</p>' +
-					'<p>Or Google it!</p>';
-	}
-	else {
-		for(j=0; j<newsInfo.length; j= j+2){
-			partTwo += '<p><a href="' + newsInfo[j] + '">'+newsInfo[j+1]+'</a></p>';
-		}
+	for(j=0; j<store.length; j=j+2){
+		partTwo += '<p><a href="' + store[j] + '">'+store[j+1]+'</a></p>';
 	}
 
 	var partThree = '<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
@@ -138,6 +149,7 @@ function contentBuilder(model, i, request) {
 	var contentString = partOne + partTwo + partThree;
 	return contentString;
 }
+//Function when marker is clicked, manipulates icon displayed and opening closing of infowindows
 function selectMarker(id) {
 	
 	if(premarkerid === -1){
@@ -179,6 +191,7 @@ function selectMarker(id) {
 //sets clicked marker to be premarker in next click event
 	premarkerid = id;
 }
+//Creates markers for each location in model
 function loadMarkers() {
 	//Populates map with Markers by looping through the model data found in app.js
 	for(i = 0; i < model.length; i++){
@@ -189,6 +202,7 @@ function loadMarkers() {
 	};
 }
 
+//Creates marker object with infowindow and clickable feature.
 function createMarker(i) {
 	var marker = (new google.maps.Marker({
 			id: i,
@@ -199,7 +213,7 @@ function createMarker(i) {
 			icon: prim
     	}));
     marker.infowindow = new google.maps.InfoWindow({
-  		content: contentBuilder(model, i, false),
+  		content: contentBuilder(model, i),
 		maxWidth: 200
 		});
 	google.maps.event.addListener( marker, 'click', function() {
@@ -208,7 +222,7 @@ function createMarker(i) {
         });
 	return marker;
 }
-//Creates map, and sets the intial settings and styles. 	
+//Creates map, and creates knockout ViewModel. ViewModel is dependent on google map components	
 function initMap() {
     var uluru = {lat: 0, lng: -122};
     map = new google.maps.Map(document.getElementById('map'), {
@@ -222,7 +236,4 @@ function initMap() {
 	loadMarkers();
 	var myViewModel = new viewModel(model);
 	ko.applyBindings(myViewModel);
-	/*google.maps.event.addListenerOnce(map, 'idle', function(){
-		contentUpdate(model);
-	});*/
 }

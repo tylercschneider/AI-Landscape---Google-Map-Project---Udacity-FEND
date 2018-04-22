@@ -235,6 +235,7 @@ var model = [
 		"news": "Microsoft"
 	}
 ];
+//Variable for Google map Customization. Moved to this doc for cleanliness
 var mapStyle = [
 		  	{
 		    "elementType": "geometry",
