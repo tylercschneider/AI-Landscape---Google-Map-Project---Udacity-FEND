@@ -111,10 +111,14 @@ function apiSorter(data) {
 function newsGather(company, i) {
 	var url = 'https://newsapi.org/v2/everything?q='+company+'+and+ai&apiKey=50795c5a608f4077a74a353d37f7157f';
 	var store;
-	$.getJSON(url).done(function(data) {
+	$.ajax({
+		url:url,
+		dataType: "json",
+		success: function(data) {
 		console.log(data);
 		store = apiSorter(data);
 		markers[i].infowindow.setContent(contentUpdate(store, model, i));
+		}
 	});
 }
 //Creates default string for infowindows in case async request to News API fails
