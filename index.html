@@ -40,15 +40,13 @@
 				<div id="map"></div>
 			</div>
 		</main>
-		<footer>
-			<!--JS DOCS-->
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  			<script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
-  			<script src="js/model.js"></script>
-    		<script src="js/viewModel.js"></script>
-		    <script async defer
-		    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz-exyRW9FYmIXb8bNKrwHDFSVOrswqsE&callback=initMap">
-		    </script>
-		</footer>
+		<!--JS DOCS-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+			<script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+			<script src="js/model.js"></script>
+		<script src="js/viewModel.js"></script>
+	    <script async defer onerror="mapError();" 
+	    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz-exyRW9FYmIXb8bNKrwHDFSVOrswqsE&callback=initMap">
+	    </script>
 	</body>
 </html>

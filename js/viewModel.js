@@ -108,7 +108,8 @@ function apiSorter(data) {
 	}
 }
 //Async request to News API
-function newsGather(company, i) {
+function contentBuilder(model, i) {
+	var company = model[i].news;
 	var url = 'https://newsapi.org/v2/everything?q='+company+'+and+ai&apiKey=50795c5a608f4077a74a353d37f7157f';
 	var store;
 	$.ajax({
@@ -119,17 +120,19 @@ function newsGather(company, i) {
 		store = apiSorter(data);
 		markers[i].infowindow.setContent(contentUpdate(store, model, i));
 		}
+	}).fail( function(){
+		markers[i].infowindow.setContent(fallBackContent(model, i));
 	});
 }
 //Creates default string for infowindows in case async request to News API fails
-function contentBuilder(model, i) {
-	newsGather(model[i].news, i);
+function fallBackContent(model, i) {
 	var partOne = '<div id="content">'+'<div id="siteNotice">'+'</div>'+
 	'<h2 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h2>'+
 	'<div id="bodyContent"><h4>Articles</h4>';
 
-	var partTwo = '<p>They\'re doing cool stuff!</p><p>Trust me.</p>' +
-					'<p>Or Google it!</p>';
+	var partTwo = '<p>They\'re doing cool stuff!</p>' + 
+	'<p>UNFORTUNATELY...the API call that displays docs here had an error. You could try reloading the page or just' +
+	' google it yourself.</p>'; 
 
 	var partThree = '<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
 	'</div>'+
@@ -240,4 +243,8 @@ function initMap() {
 	loadMarkers();
 	var myViewModel = new viewModel(model);
 	ko.applyBindings(myViewModel);
+}
+function mapError() {
+	var errorMsg = "<br><br><p>There was supposed to be a map here...</p><p>But we have encountered an error...</p><p>Sooo...Try again?!?</p>";
+	$('#map').append(errorMsg);
 }
