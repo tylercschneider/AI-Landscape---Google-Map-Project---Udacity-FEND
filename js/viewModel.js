@@ -92,10 +92,8 @@ function apiSorter(store) {
 		for(t=0; t<3; t++){
 			artLink = store["responseJSON"]["articles"][t]["url"];
 			artTitle = store["responseJSON"]["articles"][t]["title"];
-			artSource = store["responseJSON"]["articles"][t]["source"]["name"];
-			passAlong[t][0] = artLink;
-			passAlong[t][1] = artTitle;
-			passAlong[t][2] = artSource;
+			passAlong.push(artLink);
+			passAlong.push(artTitle);
 		}
 		console.log("sorting");
 		return passAlong;
@@ -105,27 +103,34 @@ function apiSorter(store) {
 		return 0;
 	}
 }
-function newsGather(company) {
+function contentUpdate(model) {
+	for(i=0; i<model.length; i++) {
+		console.log("here");
+		contentBuilder(model, i, false);
+	}
+}
+function newsGather(company, request) {
 	var url = 'https://newsapi.org/v2/everything?q='+company+'+and+ai&apiKey=50795c5a608f4077a74a353d37f7157f';
-	var store = $.ajax({url: url});
+	var store = $.ajax({url: url, async:request});
+	console.log(store);
 	console.log(store);
 	console.log(store["status"]);
 	var passAlong = apiSorter(store);
 	return passAlong;
 }
-function contentBuilder(model, i) {
-	var newsInfo = newsGather(model[i].news);
+function contentBuilder(model, i, request) {
+	var newsInfo = newsGather(model[i].news, request);
 	var partOne = '<div id="content">'+'<div id="siteNotice">'+'</div>'+
-	'<h4 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h4>'+
-	'<div id="bodyContent">';
+	'<h2 id="firstHeading" class="firstHeading"><a href="' + model[i].website + '">' + model[i].name + '</a></h2>'+
+	'<div id="bodyContent"><h4>Articles</h4>';
 	var partTwo = "";
 	if(newsInfo === 0) {
 		partTwo = '<p>They\'re doing cool stuff...trust me.</p>' +
 					'<p>Google it!</p>';
 	}
 	else {
-		for(j=0; j<3; j++){
-			partTwo += '<p><a href="' + newsInfo[j][0] + '">'+newsInfo[j][1]+'</a> -->'+ newsInfo[j][2] + '</p>';
+		for(j=0; j<newsInfo.length; j= j+2){
+			partTwo += '<p><a href="' + newsInfo[j] + '">'+newsInfo[j+1]+'</a></p>';
 		}
 		console.log("should work");
 	}
@@ -197,7 +202,7 @@ function createMarker(i) {
 			icon: prim
     	}));
     marker.infowindow = new google.maps.InfoWindow({
-  		content: contentBuilder(model, i)
+  		content: contentBuilder(model, i, false)
 		});
 	google.maps.event.addListener( marker, 'click', function() {
 		var id = marker.id;
@@ -220,3 +225,8 @@ function initMap() {
 	var myViewModel = new viewModel(model);
 	ko.applyBindings(myViewModel);
 }
+
+/*$(document).ready(function(){
+	contentUpdate(model);
+});
+*/
