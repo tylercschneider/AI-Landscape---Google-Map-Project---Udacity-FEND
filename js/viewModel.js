@@ -40,6 +40,7 @@ var viewModel = function(model) {
 	self.clickOrg = function(listItem) {
 		var id = listItem.id;
 		selectMarker(id);
+		$('.nav').toggleClass('open');
 		}
 	self.filter = ko.computed(function() {
 		var idListList = self.idList[self.selectedTag().tag];
@@ -55,6 +56,7 @@ var viewModel = function(model) {
 				markers[i].setMap(null);
 			}
 		}
+		$('.nav').toggleClass('open');
 		})
 
 }
