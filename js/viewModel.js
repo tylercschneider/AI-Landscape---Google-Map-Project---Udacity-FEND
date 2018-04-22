@@ -95,25 +95,21 @@ function apiSorter(store) {
 			passAlong.push(artLink);
 			passAlong.push(artTitle);
 		}
-		console.log("sorting");
 		return passAlong;
 	}
 	else{
-		console.log("bad sort");
 		return 0;
 	}
 }
 function contentUpdate(model) {
 	for(i=0; i<model.length; i++) {
 		console.log("here");
-		contentBuilder(model, i, false);
+		markers[i].infowindow.content = contentBuilder(model, i, false);
 	}
 }
 function newsGather(company, request) {
 	var url = 'https://newsapi.org/v2/everything?q='+company+'+and+ai&apiKey=50795c5a608f4077a74a353d37f7157f';
 	var store = $.ajax({url: url, async:request});
-	console.log(store);
-	console.log(store);
 	console.log(store["status"]);
 	var passAlong = apiSorter(store);
 	return passAlong;
@@ -125,14 +121,13 @@ function contentBuilder(model, i, request) {
 	'<div id="bodyContent"><h4>Articles</h4>';
 	var partTwo = "";
 	if(newsInfo === 0) {
-		partTwo = '<p>They\'re doing cool stuff...trust me.</p>' +
-					'<p>Google it!</p>';
+		partTwo = '<p>They\'re doing cool stuff!</p><p>Trust me.</p>' +
+					'<p>Or Google it!</p>';
 	}
 	else {
 		for(j=0; j<newsInfo.length; j= j+2){
 			partTwo += '<p><a href="' + newsInfo[j] + '">'+newsInfo[j+1]+'</a></p>';
 		}
-		console.log("should work");
 	}
 
 	var partThree = '<p>Powered by -> <a href="https://newsapi.org">News API</a></p>'+
@@ -202,7 +197,8 @@ function createMarker(i) {
 			icon: prim
     	}));
     marker.infowindow = new google.maps.InfoWindow({
-  		content: contentBuilder(model, i, false)
+  		content: contentBuilder(model, i, false),
+		maxWidth: 200
 		});
 	google.maps.event.addListener( marker, 'click', function() {
 		var id = marker.id;
@@ -224,9 +220,7 @@ function initMap() {
 	loadMarkers();
 	var myViewModel = new viewModel(model);
 	ko.applyBindings(myViewModel);
+	/*google.maps.event.addListenerOnce(map, 'idle', function(){
+		contentUpdate(model);
+	});*/
 }
-
-/*$(document).ready(function(){
-	contentUpdate(model);
-});
-*/
